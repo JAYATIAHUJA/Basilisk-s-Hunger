@@ -551,7 +551,7 @@ export default function App() {
       let cursor = { segmentIndex: 0, graphemeIndex: 0 };
       let lineIdx = 0;
       let col = 0;
-      let y = bounds.oy;
+      let y = bounds.oy + textPadding;
 
       while (true) {
         const colX = colStarts[col];
@@ -591,7 +591,9 @@ export default function App() {
 
         // If space is too narrow, leave a blank space for pristine readability!
         if (maxSpace.width >= 40) {
-          const line = layoutNextLine(prep, cursor, maxSpace.width);
+          // Provide a tiny width buffer to ensure browser DOM fonts (kerning, suffixes) never overflow canvas limits
+          const safeWidth = Math.max(10, maxSpace.width - 24);
+          const line = layoutNextLine(prep, cursor, safeWidth);
           if (line === null) break; // EOF
 
           if (lineIdx >= domLinesRef.current.length) {
@@ -622,8 +624,9 @@ export default function App() {
 
         y += LINE_HEIGHT;
 
-        if (y > bounds.maxY + CELL) {
-          if (col === 0) { col = 1; y = bounds.oy; }
+        // Cut off lines before they break the bottom textPadding bounds
+        if (y + LINE_HEIGHT > bounds.maxY + CELL - textPadding) {
+          if (col === 0) { col = 1; y = bounds.oy + textPadding; }
           else break;
         }
       }
