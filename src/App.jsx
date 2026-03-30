@@ -274,11 +274,11 @@ export default function App() {
   const dirRef = useRef({ x: CELL, y: 0 });
   const nextDirRef = useRef({ x: CELL, y: 0 });
   const foodRef = useRef({ x: -100, y: -100 });
-  const bombsRef      = useRef([]);
-  const lastTickRef   = useRef(0);
+  const bombsRef = useRef([]);
+  const lastTickRef = useRef(0);
 
   // Audio References
-  const bgmRef      = useRef(null);
+  const bgmRef = useRef(null);
   const gameOverRef = useRef(null);
 
   useEffect(() => {
@@ -352,8 +352,8 @@ export default function App() {
     lastTickRef.current = 0;
 
     if (bgmRef.current) {
-        bgmRef.current.currentTime = 0;
-        bgmRef.current.play().catch(e => console.warn(e));
+      bgmRef.current.currentTime = 0;
+      bgmRef.current.play().catch(e => console.warn(e));
     }
   }, [getBounds, randomPos]);
 
@@ -448,11 +448,11 @@ export default function App() {
           setHighScore(hs);
           setGameState('gameover');
           gsRef.current = 'gameover';
-          
+
           if (bgmRef.current) bgmRef.current.pause();
           if (gameOverRef.current) {
-              gameOverRef.current.currentTime = 0;
-              gameOverRef.current.play().catch(e => console.warn(e));
+            gameOverRef.current.currentTime = 0;
+            gameOverRef.current.play().catch(e => console.warn(e));
           }
         }
       }
@@ -489,8 +489,8 @@ export default function App() {
 
           if (bgmRef.current) bgmRef.current.pause();
           if (gameOverRef.current) {
-              gameOverRef.current.currentTime = 0;
-              gameOverRef.current.play().catch(e => console.warn(e));
+            gameOverRef.current.currentTime = 0;
+            gameOverRef.current.play().catch(e => console.warn(e));
           }
         } else {
           snake.unshift(newHead);
@@ -706,7 +706,7 @@ export default function App() {
 
         <div className="text-center">
           <h1 className="fruktur-regular text-5xl font-bold tracking-wide leading-none text-[#7f9c8f] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-            Slumber No More
+            Basilisk's Hunger
           </h1>
         </div>
 
@@ -721,21 +721,21 @@ export default function App() {
       </header>
 
       {/* ── Preloader Overlay ── */}
-      <div 
-         className={`absolute inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer transition-opacity duration-1000 bg-black/30 backdrop-blur-sm ${gameState === 'preloader' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
-         onClick={() => { 
-            if(gameState === 'preloader') { 
-                setGameState('idle'); 
-                gsRef.current = 'idle'; 
-                // start bgm immediately
-                if (bgmRef.current) {
-                    bgmRef.current.play().catch(e => console.warn(e));
-                }
-            } 
-         }}
+      <div
+        className={`absolute inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer transition-opacity duration-1000 bg-black/30 backdrop-blur-sm ${gameState === 'preloader' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => {
+          if (gameState === 'preloader') {
+            setGameState('idle');
+            gsRef.current = 'idle';
+            // start bgm immediately
+            if (bgmRef.current) {
+              bgmRef.current.play().catch(e => console.warn(e));
+            }
+          }
+        }}
       >
-          
-          <h1 className="fruktur-regular text-7xl text-[#9caea3] mb-8 relative z-10" style={{ textShadow: '0 0 40px rgba(156,174,163,0.3)' }}>
+
+        <h1 className="fruktur-regular text-7xl text-[#9caea3] mb-8 relative z-10" style={{ textShadow: '0 0 40px rgba(156,174,163,0.3)' }}>
           The Chamber of Secrets
         </h1>
         <p className="relative z-10 font-serif italic text-2xl max-w-2xl text-center leading-loose text-[#7f9c8f] drop-shadow-lg">
