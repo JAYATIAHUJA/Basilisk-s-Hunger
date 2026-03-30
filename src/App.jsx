@@ -542,7 +542,7 @@ export default function App() {
       }
 
       // ── LAYOUT TEXT in 2 columns with ROBUST collision ──
-      const colGap = 60;
+      const colGap = 140;
       const colW = ((bounds.maxX + CELL - bounds.ox) - colGap) / 2;
       const colStarts = [bounds.ox, bounds.ox + colW + colGap];
 
