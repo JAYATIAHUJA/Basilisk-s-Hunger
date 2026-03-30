@@ -542,9 +542,11 @@ export default function App() {
       }
 
       // ── LAYOUT TEXT in 2 columns with ROBUST collision ──
+      const textPadding = 40; // Keeps text comfortably inside the death boundary
       const colGap = 140;
-      const colW = ((bounds.maxX + CELL - bounds.ox) - colGap) / 2;
-      const colStarts = [bounds.ox, bounds.ox + colW + colGap];
+      const textFillWidth = (bounds.maxX + CELL - bounds.ox) - (textPadding * 2);
+      const colW = (textFillWidth - colGap) / 2;
+      const colStarts = [bounds.ox + textPadding, bounds.ox + textPadding + colW + colGap];
 
       let cursor = { segmentIndex: 0, graphemeIndex: 0 };
       let lineIdx = 0;
@@ -634,9 +636,9 @@ export default function App() {
       // ── DRAW ENTITIES ──
       // Draw border mapping the death bounds
       ctx.save();
-      ctx.strokeStyle = 'rgba(156, 174, 163, 0.15)'; // Faded light teal
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = 'rgba(156, 174, 163, 0.5)'; // Brighter, more visible boundary
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 8]);
       ctx.strokeRect(bounds.ox, bounds.oy, bounds.maxX + CELL - bounds.ox, bounds.maxY + CELL - bounds.oy);
       ctx.restore();
 
