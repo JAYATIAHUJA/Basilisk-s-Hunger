@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-500 overflow-hidden;
+  }
+}
+
+.text-line {
+  will-change: transform;
+}
+
+/* Page paper texture via layered radial gradients */
+.page-texture {
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(196,168,108,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse at 85% 85%, rgba(160,130,80,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(255,248,225,0.4) 0%, transparent 80%),
+    #e8dcc4;
+}
+
+/* Subtle aged vignette */
+.page-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(70,45,15,0.45) 100%);
+  pointer-events: none;
+  z-index: 25; /* ensures border darkening covers UI slightly */
+}
+
+.fruktur-regular {
+  font-family: "Fruktur", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.fruktur-regular-italic {
+  font-family: "Fruktur", system-ui;
+  font-weight: 400;
+  font-style: italic;
+}
