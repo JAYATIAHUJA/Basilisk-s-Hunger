@@ -690,8 +690,11 @@ export default function App() {
   return (
     <div className="relative w-full h-screen overflow-hidden select-none bg-black text-[#9caea3]">
 
+      {/* ── Global WebGL Background ── */}
+      <WebGLBackground />
+
       {/* ── header ── */}
-      <header className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-16 py-6 border-b border-[#9caea3]/10 bg-gradient-to-b from-black/80 to-transparent">
+      <header className={`absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-16 py-6 border-b border-[#9caea3]/10 bg-gradient-to-b from-black/80 to-transparent transition-opacity duration-1000 ${gameState === 'preloader' ? 'opacity-0' : 'opacity-100'}`}>
         <div className="flex items-baseline gap-3">
           <span className="font-sans text-[13px] text-[#9caea3] opacity-60 tracking-widest uppercase font-semibold">THE CHAMBER</span>
         </div>
@@ -712,9 +715,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Preloader Overlay (Opaque) ── */}
+      {/* ── Preloader Overlay ── */}
       <div 
-         className={`absolute inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer transition-opacity duration-1000 bg-[#021812] ${gameState === 'preloader' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+         className={`absolute inset-0 z-[100] flex flex-col items-center justify-center cursor-pointer transition-opacity duration-1000 bg-black/30 backdrop-blur-sm ${gameState === 'preloader' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
          onClick={() => { 
             if(gameState === 'preloader') { 
                 setGameState('idle'); 
@@ -726,7 +729,6 @@ export default function App() {
             } 
          }}
       >
-          <WebGLBackground />
           
           <h1 className="fruktur-regular text-7xl text-[#9caea3] mb-8 relative z-10" style={{ textShadow: '0 0 40px rgba(156,174,163,0.3)' }}>
           The Chamber of Secrets
@@ -741,10 +743,10 @@ export default function App() {
       </div>
 
       {/* ── text container (DOM lines injected here) ── */}
-      <div ref={textContainerRef} className="absolute inset-0 z-[4] pointer-events-none" />
+      <div ref={textContainerRef} className={`absolute inset-0 z-[4] pointer-events-none transition-all duration-1000 ${gameState === 'preloader' ? 'opacity-0' : 'opacity-100'}`} />
 
       {/* ── canvas (snake + food drawn here) ── */}
-      <canvas ref={canvasRef} className="absolute inset-0 z-20 pointer-events-none" />
+      <canvas ref={canvasRef} className={`absolute inset-0 z-20 pointer-events-none transition-all duration-1000 ${gameState === 'preloader' ? 'opacity-0' : 'opacity-100'}`} />
 
       {/* ── Overlays ── */}
       {gameState === 'idle' && (
