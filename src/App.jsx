@@ -772,6 +772,11 @@ export default function App() {
         <p className="relative z-10 mt-20 tracking-[0.4em] text-sm text-[#5d7a6b] uppercase animate-pulse font-bold">
           Click to break the seal
         </p>
+        {isMobileScreen && (
+          <p className="relative z-10 mt-6 tracking-widest text-[#5d7a6b]/70 text-[11px] uppercase font-semibold">
+            For the best experience, request "Desktop Site" in your browser
+          </p>
+        )}
       </div>
 
       {/* ── text container (DOM lines injected here) ── */}
@@ -832,6 +837,9 @@ export default function App() {
             <h2 className="text-4xl font-bold italic text-[#7f9c8f] mb-5" style={{ fontFamily: '"Playfair Display"' }}>Rotate Device</h2>
             <p className="text-[#9caea3] text-[18px]" style={{ fontFamily: '"Lora"' }}>
               The Chamber is best experienced in <strong className="text-white font-bold">landscape mode</strong>.
+            </p>
+            <p className="text-[#5d7a6b]/80 text-[13px] mt-4 font-semibold tracking-wider uppercase">
+              Tip: Open in Desktop Mode for the full experience.
             </p>
           </div>
         </div>
