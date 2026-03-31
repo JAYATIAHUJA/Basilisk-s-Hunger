@@ -720,7 +720,7 @@ export default function App() {
   // JSX UI Overlay
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="relative w-full h-screen overflow-hidden select-none bg-black text-[#9caea3]">
+    <div className="fixed inset-0 w-full h-[100dvh] overflow-hidden select-none bg-black text-[#9caea3]">
 
       {/* ── Global WebGL Background ── */}
       <WebGLBackground />
@@ -757,6 +757,17 @@ export default function App() {
             // start bgm immediately
             if (bgmRef.current) {
               bgmRef.current.play().catch(e => console.warn(e));
+            }
+            if (isMobileScreen) {
+              try {
+                if (document.documentElement.requestFullscreen) {
+                  document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                  document.documentElement.webkitRequestFullscreen();
+                }
+              } catch (e) {
+                console.warn(e);
+              }
             }
           }
         }}
@@ -847,7 +858,7 @@ export default function App() {
 
       {/* ── Joystick Overlay ── */}
       {isMobileScreen && !isPortrait && gameState !== 'preloader' && (
-        <div className="absolute bottom-8 right-8 z-[120] opacity-80 scale-90">
+        <div className="absolute bottom-16 right-16 z-[120] opacity-80 scale-[0.85] origin-bottom-right">
           <Joystick 
             size={110} 
             sticky={false} 
