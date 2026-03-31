@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { prepareWithSegments, layoutNextLine } from '@chenglou/pretext';
 import WebGLBackground from './WebGLBackground';
+import { Joystick } from 'react-joystick-component';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // NOVEL TEXT  — a short atmospheric chapter
@@ -16,8 +17,8 @@ She closed her eyes tightly, heart hammering against her ribs like a trapped bir
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
-const FONT = '400 20px "Lora", serif';
-const LINE_HEIGHT = 36;
+const FONT = '400 15px "Lora", serif';
+const LINE_HEIGHT = 28;
 const CELL = 22;          // grid cell size (snake movement unit)
 const TICK_MS = 150;         // slowed down ms per snake move for a better feel
 const OBSTACLE_R = 18;          // text avoidance radius
@@ -264,6 +265,7 @@ export default function App() {
   const [gameState, setGameState] = useState('preloader');   // preloader | idle | playing | gameover
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
 
   const gsRef = useRef('preloader');
   const scoreRef = useRef(0);
@@ -294,21 +296,28 @@ export default function App() {
   useEffect(() => { gsRef.current = gameState; }, [gameState]);
   useEffect(() => { scoreRef.current = score; }, [score]);
 
+  useEffect(() => {
+    const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // ── Bound calculation helpers ──
   const getBounds = useCallback(() => {
     const w = window.innerWidth;
     const h = window.innerHeight;
 
     // Constrain max width for better readability (like a book page)
-    const maxContentW = 1200;
+    const isMobile = w <= 768;
+    const maxContentW = isMobile ? w : 1200;
     const contentW = Math.min(w, maxContentW);
 
     // Calculate borders
-    const ox = Math.round((w - contentW) / 2) + Math.round(contentW * 0.05);
-    const oy = 110;
+    const ox = isMobile ? Math.round(w * 0.05) : Math.round((w - contentW) / 2) + Math.round(contentW * 0.05);
+    const oy = isMobile ? 80 : 110;
 
-    const maxPlayW = contentW - Math.round(contentW * 0.1);
-    const maxPlayH = h - oy - 80;
+    const maxPlayW = isMobile ? w - Math.round(w * 0.1) : contentW - Math.round(contentW * 0.1);
+    const maxPlayH = isMobile ? h - oy - 30 : h - oy - 80;
 
     // Snapped bounds
     const cols = Math.floor(maxPlayW / CELL);
@@ -357,7 +366,19 @@ export default function App() {
     }
   }, [getBounds, randomPos]);
 
-  // ── keyboard ──
+  // ── keyboard & joystick ──
+  const handleJoystick = useCallback((e) => {
+    if (gsRef.current === 'preloader' || gsRef.current === 'idle' || gsRef.current === 'gameover') {
+      if (gsRef.current !== 'preloader') startGame();
+      return;
+    }
+    const d = dirRef.current;
+    if (e.direction === 'RIGHT' && d.x === 0) nextDirRef.current = { x: CELL, y: 0 };
+    if (e.direction === 'LEFT' && d.x === 0) nextDirRef.current = { x: -CELL, y: 0 };
+    if (e.direction === 'FORWARD' && d.y === 0) nextDirRef.current = { x: 0, y: -CELL };
+    if (e.direction === 'BACKWARD' && d.y === 0) nextDirRef.current = { x: 0, y: CELL };
+  }, [startGame]);
+
   useEffect(() => {
     const onKey = (e) => {
       const arrows = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
@@ -542,11 +563,12 @@ export default function App() {
       }
 
       // ── LAYOUT TEXT in 2 columns with ROBUST collision ──
-      const textPadding = 40; // Keeps text comfortably inside the death boundary
-      const colGap = 140;
+      const isMobile = window.innerWidth <= 768;
+      const textPadding = isMobile ? 20 : 40; // Keeps text comfortably inside the death boundary
+      const colGap = isMobile ? 0 : 140;
       const textFillWidth = (bounds.maxX + CELL - bounds.ox) - (textPadding * 2);
-      const colW = (textFillWidth - colGap) / 2;
-      const colStarts = [bounds.ox + textPadding, bounds.ox + textPadding + colW + colGap];
+      const colW = isMobile ? textFillWidth : (textFillWidth - colGap) / 2;
+      const colStarts = isMobile ? [bounds.ox + textPadding] : [bounds.ox + textPadding, bounds.ox + textPadding + colW + colGap];
 
       let cursor = { segmentIndex: 0, graphemeIndex: 0 };
       let lineIdx = 0;
@@ -603,7 +625,7 @@ export default function App() {
             el.style.left = '0';
             el.style.whiteSpace = 'pre';
             el.style.fontFamily = '"Lora", serif';
-            el.style.fontSize = '20px';
+            el.style.fontSize = '15px';
             el.style.lineHeight = `${LINE_HEIGHT}px`;
             el.style.color = '#7f9c8f'; // Light teal/grey text for dark background
             el.style.pointerEvents = 'none';
@@ -626,7 +648,7 @@ export default function App() {
 
         // Cut off lines before they break the bottom textPadding bounds
         if (y + LINE_HEIGHT > bounds.maxY + CELL - textPadding) {
-          if (col === 0) { col = 1; y = bounds.oy + textPadding; }
+          if (!isMobile && col === 0) { col = 1; y = bounds.oy + textPadding; }
           else break;
         }
       }
@@ -768,7 +790,7 @@ export default function App() {
             </p>
 
             <p className="text-[15px] font-semibold tracking-widest uppercase opacity-60">
-              Press any Arrow Key
+              Press any Arrow Key or Move Joystick
             </p>
           </div>
         </div>
@@ -792,9 +814,34 @@ export default function App() {
             </div>
 
             <p className="text-[13px] tracking-widest uppercase text-red-400 opacity-60 font-semibold">
-              Arrow Key to Play Again
+              Arrow Key or Joystick to Play Again
             </p>
           </div>
+        </div>
+      )}
+
+      {/* ── Portrait Mode Warning Overlay ── */}
+      {isPortrait && window.innerWidth <= 768 && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-lg">
+          <div className="text-center px-10 py-8 bg-[#061c14] border border-[#9caea3]/30 rounded-xl shadow-2xl">
+            <h2 className="text-3xl font-bold italic text-[#7f9c8f] mb-4" style={{ fontFamily: '"Playfair Display"' }}>Rotate Device</h2>
+            <p className="text-[#9caea3] text-[16px]" style={{ fontFamily: '"Lora"' }}>
+              The Chamber is best viewed in landscape mode.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Joystick Overlay ── */}
+      {window.innerWidth <= 768 && (
+        <div className="absolute bottom-4 right-4 z-[60] opacity-80 scale-90">
+          <Joystick 
+            size={100} 
+            sticky={false} 
+            baseColor="rgba(20, 40, 30, 0.6)" 
+            stickColor="rgba(127, 156, 143, 0.8)" 
+            move={handleJoystick} 
+          />
         </div>
       )}
     </div>
