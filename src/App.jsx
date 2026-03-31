@@ -266,6 +266,7 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
 
   const gsRef = useRef('preloader');
   const scoreRef = useRef(0);
@@ -297,7 +298,11 @@ export default function App() {
   useEffect(() => { scoreRef.current = score; }, [score]);
 
   useEffect(() => {
-    const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    const handleResize = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth);
+      setIsMobileScreen(Math.min(window.innerWidth, window.innerHeight) <= 768 || window.matchMedia("(pointer: coarse)").matches);
+    };
+    handleResize(); // initialize correctly on mount
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -308,7 +313,7 @@ export default function App() {
     const h = window.innerHeight;
 
     // Constrain max width for better readability (like a book page)
-    const isMobile = w <= 768;
+    const isMobile = Math.min(w, h) <= 768;
     const maxContentW = isMobile ? w : 1200;
     const contentW = Math.min(w, maxContentW);
 
@@ -563,7 +568,7 @@ export default function App() {
       }
 
       // ── LAYOUT TEXT in 2 columns with ROBUST collision ──
-      const isMobile = window.innerWidth <= 768;
+      const isMobile = Math.min(window.innerWidth, window.innerHeight) <= 768;
       const textPadding = isMobile ? 20 : 40; // Keeps text comfortably inside the death boundary
       const colGap = isMobile ? 0 : 140;
       const textFillWidth = (bounds.maxX + CELL - bounds.ox) - (textPadding * 2);
@@ -821,25 +826,25 @@ export default function App() {
       )}
 
       {/* ── Portrait Mode Warning Overlay ── */}
-      {isPortrait && window.innerWidth <= 768 && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-lg">
-          <div className="text-center px-10 py-8 bg-[#061c14] border border-[#9caea3]/30 rounded-xl shadow-2xl">
-            <h2 className="text-3xl font-bold italic text-[#7f9c8f] mb-4" style={{ fontFamily: '"Playfair Display"' }}>Rotate Device</h2>
-            <p className="text-[#9caea3] text-[16px]" style={{ fontFamily: '"Lora"' }}>
-              The Chamber is best viewed in landscape mode.
+      {isPortrait && isMobileScreen && (
+        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/95 backdrop-blur-xl">
+          <div className="text-center px-10 py-10 bg-[#061c14]/90 border border-[#9caea3]/40 rounded-xl shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+            <h2 className="text-4xl font-bold italic text-[#7f9c8f] mb-5" style={{ fontFamily: '"Playfair Display"' }}>Rotate Device</h2>
+            <p className="text-[#9caea3] text-[18px]" style={{ fontFamily: '"Lora"' }}>
+              The Chamber is best experienced in <strong className="text-white font-bold">landscape mode</strong>.
             </p>
           </div>
         </div>
       )}
 
       {/* ── Joystick Overlay ── */}
-      {window.innerWidth <= 768 && (
-        <div className="absolute bottom-4 right-4 z-[60] opacity-80 scale-90">
+      {isMobileScreen && !isPortrait && gameState !== 'preloader' && (
+        <div className="absolute bottom-8 right-8 z-[120] opacity-80 scale-90">
           <Joystick 
-            size={100} 
+            size={110} 
             sticky={false} 
-            baseColor="rgba(20, 40, 30, 0.6)" 
-            stickColor="rgba(127, 156, 143, 0.8)" 
+            baseColor="rgba(20, 40, 30, 0.7)" 
+            stickColor="rgba(127, 156, 143, 0.9)" 
             move={handleJoystick} 
           />
         </div>
